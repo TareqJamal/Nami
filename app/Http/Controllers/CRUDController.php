@@ -2,62 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
+use App\Http\Requests\StoreAdminRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Services\CRUDAdminService;
 
 class CRUDController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreAdminRequest $request , CRUDAdminService $adminService)
     {
-        $this->validate($request, [
-            'name' => 'required|min:3|max:50',
-            'email' => 'required|email|unique:admins,email',
-            'password' => 'required|confirmed|min:6',
-            'phone' => 'required|min:11',
-            'image' => 'required',
-        ]);
-            $hash_password = bcrypt($request->password);
-            $admin = new Admin();
-            $admin->name = $request->name;
-            $admin->email = $request->email;
-            $admin->phone = $request->phone;
-            $admin->password =  $hash_password;
-            if($request->hasFile('image'))
-            {
-                $my_image = $request->file('image');
-                $image_name = $my_image->getClientOriginalName();
-                $location = $my_image->move('admin_images');
-                $admin->image = $location;
-            }
-            $admin->save();
-            // all good
-            return response()->json(['success'=>true , 'message'=>'Done Addedd']);
+        $adminService->store($request);
+        return response()->json(['success'=>true , 'message'=>'Done Addedd']);
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request , CRUDAdminService $adminService)
     {
-        $admin_id = $request->id;
-        Admin::find($admin_id)->delete();
+        $adminService->delete($request);
         return response()->json();
     }
 
-    public function edit(Request $request)
+    public function edit(Request $request , CRUDAdminService $adminService)
     {
-        $admin_id = $request->id;
-        $admin = Admin::find($admin_id);
-        $decrpt_password = Hash::needsRehash($admin->password);
-        return response()->json($admin);
+       $html = $adminService->edit($request);
+       return response()->json(['html' => $html]);
     }
 
-    public function update(Request $request): \Illuminate\Http\JsonResponse
+    public function update(Request $request , CRUDAdminService $adminService): \Illuminate\Http\JsonResponse
     {
-        $admin_id = $request->id;
-        $admin = Admin::findorfail($admin_id);
-        $admin->name = $request->name;
-        $admin->email = $request->email;
-        $admin->phone = $request->phone;
-        $admin->save();
+        $adminService->update($request);
         return response()->json();
 
     }

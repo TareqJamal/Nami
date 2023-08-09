@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -26,28 +24,36 @@ Route::get('/dashboard', function () {
 
 require __DIR__.'/auth.php';
 
-Route::controller(AdminController::class)->group(function ()
-{
-    Route::get('/admins','index')->middleware(['auth:admin'])->name('admins');
-    Route::get('/admins/data','admins_data')->name('admins_data');
+Route::group(
+    [
+        'prefix' => LaravelLocalization::setLocale(),
+        'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
+    ], function(){ //...
+    Route::controller(AdminController::class)->group(function ()
+    {
+        Route::get('/admins','index')->middleware(['auth:admin'])->name('admins');
+        Route::get('/admins/data','admins_data')->name('admins_data');
 
+    });
+
+    Route::controller(CRUDController::class)->group(function ()
+    {
+        Route::post('/admins/store','store')->name('admin.store');
+        Route::post('/admins/delete','delete')->name('admin.delete');
+        Route::post('/admin/edit','edit')->name('admin.edit');
+        Route::post('/admin/update','update')->name('admin.update');
+
+    });
+
+    Route::controller(AuthController::class)->group(function ()
+    {
+        Route::get('/','login')->name('admin.login');
+        Route::post('/admin/check/login','check')->name('admin.check');
+
+    });
 });
 
-Route::controller(CRUDController::class)->group(function ()
-{
-    Route::post('/admins/store','store')->name('admin.store');
-    Route::post('/admins/delete','delete')->name('admin.delete');
-    Route::post('/admin/edit','edit')->name('admin.edit');
-    Route::post('/admin/update','update')->name('admin.update');
 
-});
-
- Route::controller(AuthController::class)->group(function ()
- {
-     Route::get('/login/admin','login')->name('admin.login');
-     Route::post('/admin/check/login','check')->name('admin.check');
-
- });
 
 
 

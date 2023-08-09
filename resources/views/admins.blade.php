@@ -6,9 +6,32 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"/>
     <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <style>
+        .error{
+            color: #FF0000;
+        }
+    </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul>
+            @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
+                <li>
+                    <a rel="alternate" hreflang="{{ $localeCode }}" href="{{ LaravelLocalization::getLocalizedURL($localeCode, null, [], true) }}">
+                        {{ $properties['native'] }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+
+    </div>
+</nav>
 <div class="container mt-5">
     <h2 class="mb-4">Nami Task</h2>
     <br>
@@ -39,17 +62,17 @@
                     </div>
                     <!-- Modal body -->
                     <div class="modal-body">
-                        <input type="text" name="name"  class="form-control" placeholder="Admin Name" required>
+                        <input type="text" data-validation="length" data-validation-length="min4"  data-validation="required" name="name"  class="form-control" placeholder="Admin Name" >
                         <br>
-                        <input type="email" name="email"  class="form-control" placeholder="Admin Email">
+                        <input type="email" data-validation="email" name="email"  class="form-control" placeholder="Admin Email">
                         <br>
-                        <input type="number" name="phone"  class="form-control" placeholder="Admin Phone">
+                        <input type="number" data-validation="number" name="phone"  class="form-control" placeholder="Admin Phone">
                         <br>
                         <input type="password" name="password"  class="form-control" placeholder="Admin Password">
                         <br>
                         <input type="password" name="password_confirmation"  class="form-control" placeholder="Confirm Password">
                         <br>
-                        <input type="file" name="image"  class="form-control" placeholder="Admin Image">
+                        <input type="file"  name="image"  class="form-control" placeholder="Admin Image">
                         <br>
                     </div>
                     <!-- Modal footer -->
@@ -67,7 +90,7 @@
     <div class="modal" id="modal_edit">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="form_Admin_edit" action="{{route('admin.update')}}" method="POST">
+                <form id="form_Admin_edit" data-action="{{route('admin.update')}}" method="POST">
                     @csrf
                     <div class="modal-header">
                         <h4 class="modal-title" id="modal_title">EDIT ADMIN</h4>
@@ -89,7 +112,6 @@
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
@@ -100,17 +122,17 @@
 <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="{{asset('')}}Js/jquery.min.js"></script>
+<script src="{{asset('')}}Js/form-validator/jquery.form-validator.min.js"></script>
 <script type="text/javascript">
-
     /////////////////////////////  CODE FOR Datatable ///////////////////////////////////////////////////
-
     var myTable;
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(function () {
         myTable = $('#myTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('admins_data') }}",
+            ajax:"{{ route('admins_data') }}",
             columns: [
                 {data: 'id', name: 'id'},
                 {data: 'name', name: 'name'},
@@ -185,12 +207,8 @@
             type: 'Post',
             data: {_token: CSRF_TOKEN, id: id},
             success: function (response) {
-                $('#modal_title').html('Edit Data of '+ response.name)
-                $('#name').val(response.name);
-                $('#email').val(response.email);
-                $('#phone').val(response.phone);
-                $('#id').val(response.id);
-                $("#modal_edit").modal('show');
+                $('#modal_edit').html(response.html);
+                $('#modal_edit').modal('show');
             }
         });
     });
@@ -209,8 +227,10 @@
                 processData: false,
                 success:function(response)
                 {
-                    myTable.ajax.reload();
+                    $('#model').trigger("reset");
                     $('#modal').modal('hide');
+                    myTable.ajax.reload();
+
                 },
                 error: function(response) {
                 }
@@ -218,5 +238,21 @@
         });
     });
 
+</script>
+<script>
+    // Add validator
+    $.formUtils.addValidator({
+        name : 'name',
+        validatorFunction : function(value, $el, config, language, $form) {
+           return value.length < 4;
+        },
+        errorMessage : 'You have to write name',
+        errorMessageKey: 'name'
+    });
+
+    // Initiate form validation
+    $.validate({
+        modules : 'date, security'
+    });
 </script>
 </html>
