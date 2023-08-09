@@ -33,9 +33,9 @@
     </div>
 </nav>
 <div class="container mt-5">
-    <h2 class="mb-4">Nami Task</h2>
+    <h2 class="mb-4">{{trans('admins.Nami Task')}}</h2>
     <br>
-    <button type="button" id="btn_Add" class="btn btn-primary">ADD ADMIN</button>
+    <button type="button" id="btn_Add" class="btn btn-primary">{{__('admins.Add Admin')}}</button>
 
     <br>
     <table id="myTable" class="table table-bordered">
@@ -58,11 +58,11 @@
                 <form id="form_Admin" data-action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
-                        <h4 class="modal-title" id="modal_title">ADD NEW ADMIN</h4>
+                        <h4 class="modal-title" id="modal_title">{{__('admins.Add Admin')}}</h4>
                     </div>
                     <!-- Modal body -->
                     <div class="modal-body">
-                        <input type="text" data-validation="length" data-validation-length="min4"  data-validation="required" name="name"  class="form-control" placeholder="Admin Name" >
+                        <input type="text" data-validation="length" data-validation-length="min4"  data-validation="required" name="name"  class="form-control" placeholder="{{__('admins.Admin Name')}}" >
                         <br>
                         <input type="email" data-validation="email" name="email"  class="form-control" placeholder="Admin Email">
                         <br>
