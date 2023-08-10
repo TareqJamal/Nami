@@ -3,7 +3,10 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CRUDController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCRUDController;
 use Illuminate\Support\Facades\Route;
+use Mcamara\LaravelLocalization\LaravelLocalization;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,12 +29,12 @@ require __DIR__.'/auth.php';
 
 Route::group(
     [
-        'prefix' => LaravelLocalization::setLocale(),
+        'prefix' => (new Mcamara\LaravelLocalization\LaravelLocalization)->setLocale(),
         'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath' ]
     ], function(){ //...
     Route::controller(AdminController::class)->group(function ()
     {
-        Route::get('/admins','index')->middleware(['auth:admin'])->name('admins');
+        Route::get('/admins','index')->name('admins');
         Route::get('/admins/data','admins_data')->name('admins_data');
 
     });
@@ -50,6 +53,19 @@ Route::group(
         Route::get('/','login')->name('admin.login');
         Route::post('/admin/check/login','check')->name('admin.check');
 
+    });
+    Route::controller(ProductController::class)->group(function ()
+    {
+        Route::get('/products','index')->name('products');
+        Route::get('/products/datatable','products_data')->name('products_data');
+
+    });
+    Route::controller(ProductCRUDController::class)->group(function ()
+    {
+        Route::post('/product/store','store')->name('product.store');
+        Route::post('/product/delete','delete')->name('product.delete');
+        Route::post('/product/edit','edit')->name('product.edit');
+        Route::post('/product/update/{id}','update')->name('product.update');
     });
 });
 

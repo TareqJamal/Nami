@@ -22,7 +22,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="#">Admins <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{{route('admins')}}">Admins <span class="sr-only">(current)</span></a>
             </li>
             @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
                 <li>
@@ -43,89 +43,66 @@
     </div>
 </nav>
 <div class="container mt-5">
-    <h2 class="mb-4">{{trans('admins.Nami Task')}}</h2>
+    <h2 class="mb-4">{{__('products.add new product')}}</h2>
     <br>
-    <button type="button" id="btn_Add" class="btn btn-primary">{{__('admins.Add Admin')}}</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Modal">
+        {{__('products.add new product')}}
+    </button>
+    <div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="form_product" data-action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="modal_title">{{__('products.add new product')}}</h4>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            @foreach(config('translatable.locales') as $locale)
+                                <input type="text" data-validation="length" data-validation-length="min4"  data-validation="required" name="name:{{$locale}}"  class="form-control" placeholder="{{__('products.product name')}}.{{$locale}} " >
+                                <br>
+                            @endforeach
+                            <input type="number" data-validation="number" data-validation="required" name="price"  class="form-control" placeholder="{{__('products.product price')}}">
+                            <br>
+                            <input type="file"  name="image"  class="form-control" placeholder="{{__('product.product image')}}">
+                            <br>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button id="submit" type="submit" class="btn btn-info">{{__('products.add product')}}</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">{{__('products.close')}}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <br>
-    <table id="myTable" class="table table-bordered">
+    <table id="Table_product" class="table table-bordered">
         <thead>
         <tr>
-            <th>No</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Image</th>
+            <th>Product No</th>
+            <th>Product Name</th>
+            <th>ProductPrice</th>
+            <th>Produce Image</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
-    <div class="modal" id="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="form_Admin" data-action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="modal_title">{{__('admins.Add Admin')}}</h4>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <input type="text" data-validation="length" data-validation-length="min4"  data-validation="required" name="name"  class="form-control" placeholder="{{__('admins.Admin Name')}}" >
-                        <br>
-                        <input type="email" data-validation="email" name="email"  class="form-control" placeholder="Admin Email">
-                        <br>
-                        <input type="number" data-validation="number" name="phone"  class="form-control" placeholder="Admin Phone">
-                        <br>
-                        <input type="password" name="password"  class="form-control" placeholder="Admin Password">
-                        <br>
-                        <input type="password" name="password_confirmation"  class="form-control" placeholder="Confirm Password">
-                        <br>
-                        <input type="file"  name="image"  class="form-control" placeholder="Admin Image">
-                        <br>
-                    </div>
-                    <!-- Modal footer -->
-                    <div class="modal-footer">
-                        <button id="submit" type="submit" class="btn btn-info">ADD</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </form>
 
-            </div>
-        </div>
-    </div>
+    <div class="modal" id="modal-product-edit">
 
-
-    <div class="modal" id="modal_edit">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="form_Admin_edit" data-action="{{route('admin.update')}}" method="POST">
-                    @csrf
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="modal_title">EDIT ADMIN</h4>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="modal-body">
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Admin Name" required>
-                        <br>
-                        <input type="email" name="email" id="email" class="form-control" placeholder="Admin Email" required>
-                        <br>
-                        <input type="number" name="phone" id="phone" class="form-control" placeholder="Admin Phone" required>
-                        <br>
-                        <input type="number" style="display: none" name="id" id="id" class="form-control" placeholder="Admin Phone" required>
-                        <br>
-                    </div>
-                    <!-- Modal footer -->
-                    <div class="modal-footer">
-                        <button id="submit_edit" type="submit" class="btn btn-info">Edit</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 </div>
+
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
@@ -139,15 +116,14 @@
     var myTable;
     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
     $(function () {
-        myTable = $('#myTable').DataTable({
+        myTable = $('#Table_product').DataTable({
             processing: true,
             serverSide: true,
-            ajax:"{{ route('admins_data') }}",
+            ajax:"{{ route('products_data') }}",
             columns: [
                 {data: 'id', name: 'id'},
-                {data: 'name', name: 'name'},
-                {data: 'email', name: 'email'},
-                {data: 'phone', name: 'phone'},
+                {data: 'name',name:'name'},
+                {data: 'price', name: 'price'},
                 {data: 'image', name: 'image'},
                 {data: 'action', name: 'action',
                     orderable: false,
@@ -155,73 +131,73 @@
             ]
         });
     });
-
     ///////////////////////////  CODE FOR show Model Form to Store Admin ///////////////////////////////////////////////////
-
     $("#btn_Add").on('click',function()
     {
-        $("#modal").modal('show');
-        $("#form_Admin").trigger('reset');
+        $("#modal-product").modal('show');
+        $("#form_product").trigger('reset');
 
     });
-
     ///////////////////////////// AJAX CODE FOR Store Admin ///////////////////////////////////////////////////
-
-    $(document).ready(function(){
-        $('#form_Admin').on('submit', function(event){
-            event.preventDefault();
+    $(document).ready(function ()
+    {
+        $('#form_product').on('submit',function (e)
+        {
             var url = $(this).attr('data-action');
+            e.preventDefault();
             $.ajax({
-                url: url,
-                method: 'POST',
-                data: new FormData(this),
+                url : url,
+                method : "POST",
+                data : new FormData(this),
                 dataType: 'JSON',
                 contentType: false,
                 cache: false,
                 processData: false,
-                success:function(response)
+                success: function(responce)
                 {
+                    $('#Modal').modal('hide');
                     myTable.ajax.reload();
-                    $('#modal').modal('hide');
+
                 },
                 error: function(response) {
+                    console.log(response);
                 }
-            });
-        });
+            })
+
+
+        })
+
     });
 
     ///////////////////////////// AJAX CODE FOR Delete Admin ///////////////////////////////////////////////////
-
-    $('#myTable').on('click','#btn_delete',function() {
+    $('#Table_product').on('click','#btn_delete',function() {
         var id = $(this).data('id');
         $.ajax({
-            url: "{{ route('admin.delete')}}",
+            url: "{{ route('product.delete')}}",
             type: 'Post',
             data: {_token: CSRF_TOKEN, id: id},
             success: function (response) {
-                    alert("Record deleted");
-                    myTable.ajax.reload();
+                alert(response.message);
+                myTable.ajax.reload();
             }
         });
     });
 
-    ///////////////////////////// AJAX CODE FOR Edit Admin ///////////////////////////////////////////////////
-
-    $('#myTable').on('click','#btn_edit',function() {
+    $('#Table_product').on('click','#btn_edit',function() {
         var id = $(this).data('id');
         $.ajax({
-            url: "{{ route('admin.edit')}}",
+            url: "{{ route('product.edit')}}",
             type: 'Post',
             data: {_token: CSRF_TOKEN, id: id},
             success: function (response) {
-                $('#modal_edit').html(response.html);
-                $('#modal_edit').modal('show');
+                $('#modal-product-edit').html(response.html);
+                $('#modal-product-edit').modal('show');
             }
         });
     });
 
     $(document).ready(function(){
-        $('#form_Admin_edit').on('submit_edit', function(event){
+        $('#form_product_edit').on('btn_edit', function(event){
             event.preventDefault();
             var url = $(this).attr('data-action');
             $.ajax({
@@ -234,8 +210,9 @@
                 processData: false,
                 success:function(response)
                 {
-                    $('#model').trigger("reset");
-                    $('#modal').modal('hide');
+                    console.log(response.message);
+                    $('#modal-product').trigger("reset");
+                    $('#modal-product').modal('hide');
                     myTable.ajax.reload();
 
                 },
@@ -244,6 +221,10 @@
             });
         });
     });
+
+
+
+
 
 </script>
 <script>
@@ -251,7 +232,7 @@
     $.formUtils.addValidator({
         name : 'name',
         validatorFunction : function(value, $el, config, language, $form) {
-           return value.length < 4;
+            return value.length < 4;
         },
         errorMessage : 'You have to write name',
         errorMessageKey: 'name'
